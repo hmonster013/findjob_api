@@ -1,0 +1,7 @@
+django
+python-dotenv
+psycopg2-binary
+python-decouple
+djangorestframework
+drf-yasg
+pyyaml

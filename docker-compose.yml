@@ -1,0 +1,37 @@
+version: '3'
+
+services:
+  db:
+    image: postgres:15
+    container_name: findjob_postgres
+    restart: always
+    environment:
+      - POSTGRES_DB=myjob_db
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=1
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./data/postgres_data:/var/lib/postgresql/data
+    networks:
+      - findjob_network
+  web:
+    build: 
+      context: .
+      dockerfile: Dockerfile
+    container_name:  findjob_web
+    restart: always
+    ports:
+      - "8000:8000"
+    volumes:
+      - .:/findjob_api
+    environment:
+      - DEBUG=True
+    command: python manage.py runserver 0.0.0.0:8000
+    depends_on:
+      - db
+    networks:
+      - findjob_network
+
+networks:
+  findjob_network:
