@@ -18,10 +18,31 @@ from decouple import config
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # COMMON SETTING
+APP_ENVIRONMENT = config('APP_ENV')
+
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 BASE_URL = 'http://localhost:8000'
 
+AUTH_USER_MODEL = 'authentication.User'
+
+REDIRECT_LOGIN_CLIENT = {
+    "JOB_SEEKER": "dang-nhap-ung-vien",
+    "EMPLOYER": "dang-nhap-nha-tuyen-dung"
+}
+
+DOMAIN_CLIENT = {
+    "development": "http://localhost:3000/",
+    "production": config('WEB_CLIENT_URL'),
+}
+
+# FACEBOOK CONFIGURATION
+SOCIAL_AUTH_FACEBOOK_DIALOG_URL = 'https://www.facebook.com/v15.0/dialog/oauth/'
+SOCIAL_AUTH_FACEBOOK_OAUTH2_REVOKE_TOKEN_URL = 'https://graph.facebook.com/v15.0/me/permissions'
+SOCIAL_AUTH_FACEBOOK_KEY = config('SOCIAL_AUTH_FACEBOOK_KEY')
+SOCIAL_AUTH_FACEBOOK_SECRET = config('SOCIAL_AUTH_FACEBOOK_SECRET')
+
+EMAIL_HOST_USER = config('EMAIL_HOST_USER')
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
@@ -44,10 +65,24 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     
+    # BASE
     "authentication",
     "common",
+    "info",
+    "job",
+    "findjob",
     
+    # ADD
+    'cloudinary',
+    'ckeditor',
+    'django_otp',
+    'rest_framework',
+    'django_filters',
     'drf_yasg',
+    'oauth2_provider',
+    'social_django',
+    'drf_social_oauth2',
+    'celery',
 ]
 
 MIDDLEWARE = [
@@ -65,7 +100,7 @@ ROOT_URLCONF = "findjob_api.urls"
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [],
+        "DIRS": [os.path.join(BASE_DIR, 'templates')],
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [

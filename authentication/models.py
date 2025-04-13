@@ -1,11 +1,12 @@
 from django.db import models
 from django.contrib.auth.models import (AbstractUser, BaseUserManager)
+from common.models import File
 from configs import variable_system
 
 class AuthBaseModel(models.Model):
     class Meta:
         abstract = True
-    
+        
     create_at = models.DateTimeField(auto_now_add=True)
     update_at = models.DateTimeField(auto_now=True)
     
@@ -31,7 +32,7 @@ class UserManager(BaseUserManager):
         if role_name is None:
             raise ValueError(self.role_name_required_message)
         
-        user = self.create_user(email=email, full_name=full_name, password=password, extra_fields=extra_fields)
+        user = self.create_user(email=email, full_name=full_name, password=password, **extra_fields)
         user.role_name = role_name
         user.save()
         
@@ -52,19 +53,48 @@ class UserManager(BaseUserManager):
         
         return user
     
-# class User(AbstractUser, AuthBaseModel):
-#     username = None
-#     first_name = None
-#     last_name = None
-#     date_joined = None
-#     full_name = models.CharField(max_length=100)
-#     email = models.EmailField(max_length=100, unique=True, db_index=True)
-#     email_notification_active = models.BooleanField(default=True)
-#     sms_notification_active = models.BooleanField(default=True)
-#     has_company = models.BooleanField(default=False)
-#     is_verify_email = models.BooleanField(default=False)
+class User(AbstractUser, AuthBaseModel):
+    username = None
+    first_name = None
+    last_name = None
+    date_joined = None
+    full_name = models.CharField(max_length=100)
+    email = models.EmailField(max_length=100, unique=True, db_index=True)
+    email_notification_active = models.BooleanField(default=True)
+    sms_notification_active = models.BooleanField(default=True)
+    has_company = models.BooleanField(default=False)
+    is_verify_email = models.BooleanField(default=False)
     
-#     role_name = models.CharField(max_length=10,
-#                                  choices=variable_system.ROLE_CHOICES,
-#                                  default=variable_system.JOB_SEEKER)
-#     avatar = models.OneToOneField(File)
+    role_name = models.CharField(max_length=10,
+                                 choices=variable_system.ROLE_CHOICES,
+                                 default=variable_system.JOB_SEEKER)
+    avatar = models.OneToOneField(File,
+                                  on_delete=models.SET_NULL,
+                                  null=True,
+                                  blank=True,
+                                  related_name='user')
+    
+    class Meta:
+        db_table = "findjob_authentication_user"
+        verbose_name_plural = "Users"
+        
+    objects = UserManager()
+    USERNAME_FIELD = "email"
+    REQUIRED_FIELDS = ["full_name"]
+    
+class ForgotPasswordToken(AuthBaseModel):
+    token = models.CharField(max_length=255,
+                             null=True)
+    code = models.IntegerField(null=True)
+    expired_at = models.DateTimeField()
+    is_active = models.BooleanField(default=True)
+    platform = models.CharField(max_length=3,
+                                choices=variable_system.PLATFORM_CHOICES,
+                                default="WEB")
+    
+    user = models.ForeignKey(User,
+                             on_delete=models.CASCADE,
+                             related_name="forgot_password_tokens")
+    
+    class Meta:
+        db_table = "findjob_authentication_forgot_password_token"

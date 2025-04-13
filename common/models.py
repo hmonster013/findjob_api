@@ -102,6 +102,9 @@ class File(CommonBaseModel):
     meta_date = models.JSONField(blank=True,
                                  null=True)
     
+    class Meta:
+        db_table = "findjob_common_file"
+        
     def save(self, *args, **kwargs):
         if self.file:
             self.bytes = self.file.size
@@ -115,5 +118,3 @@ class File(CommonBaseModel):
         
     def get_full_url(self):
         return f"{settings.BASE_URL}{self.file.url}"
-    
-    

@@ -43,8 +43,15 @@ urlpatterns = [
     re_path(r"^swagger(?P<format>\.json|\.yaml)$", schema_view.without_ui(cache_timeout=0), name="schema-json"),
     
     # Base
-    path("admin/", admin.site.urls),
-    path("api/files/", include("common.urls"))
+    path('api/', include(
+        [
+            path('common/', include('common.urls')),    
+            path('auth/', include('authentication.urls')),
+            path('info/', include('info.urls')),
+            path('job/', include('job.urls')),
+            path('findjob/', include('findjob.urls')),
+        ]
+    ))
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 
