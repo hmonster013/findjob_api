@@ -54,7 +54,7 @@ def convert_data_with_en_key_to_vn_key(data, key_dict, show_status_number=True):
 def send_mail(subject, text_content, email_html, to=None, cc=None, bcc=None):
     email = EmailMultiAlternatives(
         subject=subject,
-        text_content=text_content,
+        body=text_content,
         from_email=settings.EMAIL_HOST_USER,
         to=to,
         cc=cc,

@@ -499,6 +499,7 @@ def employer_register(request):
         return response_data(status=status.HTTP_400_BAD_REQUEST, errors=serializer.errors)
     try:
         user = serializer.save()
+        print(user)
         platform = serializer.validated_data.get("platform")
         if user:
             helper.send_email_verify_email(request, user,

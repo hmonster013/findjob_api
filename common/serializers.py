@@ -2,19 +2,15 @@ from rest_framework import serializers
 from .models import (
     District,
     Location,
-    Career,
-    File
+    Career
 )
 
-class FileUploadSerialized(serializers.ModelSerializer):
-    class Meta:
-        model = File
-        fields = ['file', 'resource_type']
 
 class DistrictSerializer(serializers.ModelSerializer):
     class Meta:
         model = District
         fields = ('id', 'name', 'city')
+
 
 class CareerSerializer(serializers.ModelSerializer):
     name = serializers.CharField(max_length=150)

@@ -23,7 +23,7 @@ def send_email_verify_email_task(to, data=None, cc=None, bcc=None):
     data["my_address"] = variable_system.COMPANY_INFO["ADDRESS"]
     data["now"] = datetime.now().date().strftime(variable_system.DATE_TIME_FORMAT["dmY"])
     
-    email_html = render_to_string("verify-email.html", data)
+    email_html = render_to_string("emails/verify-email.html", data)
     text_content = strip_tags(email_html)
     sent = utils.send_mail(subject=subject,
                            text_content=text_content,
@@ -48,7 +48,7 @@ def send_email_reset_password_for_web_task(to, reset_password_url, cc=None, bcc=
         "reset_password_url": reset_password_url
     }
 
-    email_html = render_to_string('forgot-password.html', data)
+    email_html = render_to_string('emails/forgot-password.html', data)
     text_content = strip_tags(email_html)
     sent = utils.send_mail(subject, text_content, email_html, to=to, cc=cc, bcc=bcc)
 

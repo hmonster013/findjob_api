@@ -3,7 +3,7 @@ version: '3'
 services:
   db:
     image: postgres:15
-    container_name: findjob_postgres
+    container_name: findjob-postgres
     restart: always
     environment:
       - POSTGRES_DB=myjob_db
@@ -15,11 +15,19 @@ services:
       - ./data/postgres_data:/var/lib/postgresql/data
     networks:
       - findjob_network
-  web:
+  redis:
+    image: redis:alpine
+    container_name: findjob-redis
+    restart: unless-stopped
+    networks:
+      - findjob_network
+    ports:
+      - "6379:6379"
+  backend:
     build: 
       context: .
       dockerfile: Dockerfile
-    container_name:  findjob_web
+    container_name:  findjob-backend
     restart: always
     ports:
       - "8000:8000"
@@ -32,6 +40,21 @@ services:
       - db
     networks:
       - findjob_network
+  celery-worker:
+    build: 
+      context: .
+      dockerfile: Dockerfile
+    container_name: findjob-celery-worker
+    restart: unless-stopped
+    command: celery -A findjob_api.celery worker --loglevel=info
+    env_file:
+      - .env
+    networks:
+      - findjob_network
+    depends_on:
+      - redis
+      - backend
 
 networks:
   findjob_network:
+    name: findjob_network

@@ -66,7 +66,7 @@ class JobPost(JobPostBaseModel):
     peoples_applied = models.ManyToManyField(User, through='JobPostActivity', related_name="job_posts_activity")
 
     class Meta:
-        db_table = "myjob_job_job_post"
+        db_table = "findjob_job_job_post"
 
     def __str__(self):
         return f"{self.job_name}"
@@ -77,7 +77,7 @@ class SavedJobPost(JobPostBaseModel):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
 
     class Meta:
-        db_table = "myjob_job_saved_job_post"
+        db_table = "findjob_job_saved_job_post"
         verbose_name_plural = "Saved job posts"
 
     def __str__(self):
@@ -97,7 +97,7 @@ class JobPostActivity(JobPostBaseModel):
     resume = models.ForeignKey(Resume, on_delete=models.CASCADE, null=True)
 
     class Meta:
-        db_table = "myjob_job_job_post_activity"
+        db_table = "findjob_job_job_post_activity"
         verbose_name_plural = "Job posts activity"
 
 class JobPostNotification(JobPostBaseModel):
@@ -117,5 +117,5 @@ class JobPostNotification(JobPostBaseModel):
                              related_name="job_post_notifications")
 
     class Meta:
-        db_table = "myjob_job_job_post_notification"
+        db_table = "findjob_job_job_post_notification"
         verbose_name_plural = "Job post notifications"

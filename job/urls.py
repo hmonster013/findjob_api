@@ -1,13 +1,8 @@
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
-from .views import web_views, app_views
+from .views import web_views
 
 app_router = DefaultRouter()
-app_router.register('job-posts', app_views.JobPostViewSet, basename="app-job-posts")
-app_router.register('job-seeker-job-posts-activity', app_views.JobSeekerJobPostActivityViewSet,
-                    basename='app-job-seeker-job-posts-activity')
-app_router.register('job-post-notifications', app_views.JobPostNotificationViewSet,
-                    basename='app-job-post-notifications')
 
 web_router = DefaultRouter()
 web_router.register('private-job-posts', web_views.PrivateJobPostViewSet, basename='private-web-job-posts')
@@ -20,9 +15,6 @@ web_router.register('job-post-notifications', web_views.JobPostNotificationViewS
                     basename='web-job-post-notifications')
 
 urlpatterns = [
-    path('app/', include([
-        path('', include(app_router.urls))
-    ])),
     path('web/', include([
         path('seach/job-suggest-title/', web_views.job_suggest_title_search),
         path('', include(web_router.urls)),

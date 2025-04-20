@@ -1,41 +1,26 @@
 import json
-from configs import variable_system
+from configs import variable_system as var_sys
 from django.conf import settings
 from helpers import utils, helper
 from configs import variable_response as var_res, paginations, app_setting
 from django.db.models import Count
 from rest_framework.decorators import api_view
-from rest_framework.views import APIView
-from rest_framework.response import Response
 from rest_framework import status
-from django.utils import timezone
 from .models import (
     Career,
     City,
-    District
+    District,
 )
 from .serializers import (
-    FileUploadSerialized,
-    CareerSerializer,
+    CareerSerializer
 )
 
-class FileUploadView(APIView):
-    def post(self, request, *args, **kwargs):
-        serializer = FileUploadSerialized(data=request.data)
-        if serializer.is_valid():
-            file_obj = serializer.save(uploaded_at=timezone.now())
-            return Response({
-                "message": "Upload thành công",
-                "file_url": file_obj.get_full_url(),
-                "id": file_obj.id,
-            }, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 @api_view(http_method_names=["POST"])
 def create_database(request):
-    if settings.APP_ENVIRONMENT == app_setting.ENV_PROD :
+    if settings.APP_ENVIRONMENT == app_setting.ENV_PROD:
         return var_res.response_data(status=status.HTTP_403_FORBIDDEN)
-    
+
     data = {}
     nghe = [{'id': 1, 'name': 'Hành chính - Thư ký'}, {'id': 2, 'name': 'An ninh - Bảo vệ'},
             {'id': 3, 'name': 'Thiết kế - Sáng tạo nghệ thuật'}, {'id': 4, 'name': 'Kiến trúc - Thiết kế nội thất'},
@@ -60,11 +45,13 @@ def create_database(request):
     for c in nghe:
         career = Career.objects.create(name=c["name"])
         data[c["id"]] = career.id
-    with open("C:\\Users\\ACER\\OneDrive\\Máy tính\\Do_an\\find_job\\findjob_api\\data\\map.json", "w", encoding="utf-8") as file:
+
+    with open("C:/Users/khuy2/Desktop/map.json", "w", encoding="utf-8") as file:
         json.dump({
             "career_map": data
         }, file, ensure_ascii=False)
     return var_res.response_data(data="OKE")
+
 
 @api_view(http_method_names=["GET"])
 def get_all_config(request):
@@ -73,19 +60,19 @@ def get_all_config(request):
 
     try:
         # system
-        gender_tuple = utils.convert_tuple_or_list_to_options(variable_system.GENDER_CHOICES)
-        marital_status_tuple = utils.convert_tuple_or_list_to_options(variable_system.MARITAL_STATUS_CHOICES)
-        language_tuple = utils.convert_tuple_or_list_to_options(variable_system.LANGUAGE_CHOICES)
-        language_level_tuple = utils.convert_tuple_or_list_to_options(variable_system.LANGUAGE_LEVEL_CHOICES)
-        position_tuple = utils.convert_tuple_or_list_to_options(variable_system.POSITION_CHOICES)
-        type_of_workplace_tuple = utils.convert_tuple_or_list_to_options(variable_system.TYPE_OF_WORKPLACE_CHOICES)
-        job_type_tuple = utils.convert_tuple_or_list_to_options(variable_system.JOB_TYPE_CHOICES)
-        academic_level_tuple = utils.convert_tuple_or_list_to_options(variable_system.ACADEMIC_LEVEL)
-        experience_tuple = utils.convert_tuple_or_list_to_options(variable_system.EXPERIENCE_CHOICES)
-        employee_size_tuple = utils.convert_tuple_or_list_to_options(variable_system.EMPLOYEE_SIZE_CHOICES)
-        application_status_tuple = utils.convert_tuple_or_list_to_options(variable_system.APPLICATION_STATUS)
-        frequency_notification_tuple = utils.convert_tuple_or_list_to_options(variable_system.FREQUENCY_NOTIFICATION)
-        job_post_status_tuple = utils.convert_tuple_or_list_to_options(variable_system.JOB_POST_STATUS)
+        gender_tuple = utils.convert_tuple_or_list_to_options(var_sys.GENDER_CHOICES)
+        marital_status_tuple = utils.convert_tuple_or_list_to_options(var_sys.MARITAL_STATUS_CHOICES)
+        language_tuple = utils.convert_tuple_or_list_to_options(var_sys.LANGUAGE_CHOICES)
+        language_level_tuple = utils.convert_tuple_or_list_to_options(var_sys.LANGUAGE_LEVEL_CHOICES)
+        position_tuple = utils.convert_tuple_or_list_to_options(var_sys.POSITION_CHOICES)
+        type_of_workplace_tuple = utils.convert_tuple_or_list_to_options(var_sys.TYPE_OF_WORKPLACE_CHOICES)
+        job_type_tuple = utils.convert_tuple_or_list_to_options(var_sys.JOB_TYPE_CHOICES)
+        academic_level_tuple = utils.convert_tuple_or_list_to_options(var_sys.ACADEMIC_LEVEL)
+        experience_tuple = utils.convert_tuple_or_list_to_options(var_sys.EXPERIENCE_CHOICES)
+        employee_size_tuple = utils.convert_tuple_or_list_to_options(var_sys.EMPLOYEE_SIZE_CHOICES)
+        application_status_tuple = utils.convert_tuple_or_list_to_options(var_sys.APPLICATION_STATUS)
+        frequency_notification_tuple = utils.convert_tuple_or_list_to_options(var_sys.FREQUENCY_NOTIFICATION)
+        job_post_status_tuple = utils.convert_tuple_or_list_to_options(var_sys.JOB_POST_STATUS)
 
         # database
         cities = City.objects.exclude(name__icontains=exclude_city_name).values_list("id", "name")
@@ -165,6 +152,7 @@ def get_all_config(request):
     else:
         return var_res.response_data(data=res_data)
 
+
 @api_view(http_method_names=["GET"])
 def get_districts(request):
     params = request.query_params
@@ -184,6 +172,7 @@ def get_districts(request):
     else:
         return var_res.response_data(data=district_options)
 
+
 @api_view(http_method_names=["GET"])
 def get_top_10_careers(request):
     try:
@@ -193,6 +182,7 @@ def get_top_10_careers(request):
         helper.print_log_error("get_top_careers", ex)
         return var_res.response_data(status=status.HTTP_500_INTERNAL_SERVER_ERROR)
     return var_res.response_data(data=serializer.data)
+
 
 @api_view(http_method_names=["GET"])
 def get_all_careers(request):

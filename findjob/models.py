@@ -21,7 +21,7 @@ class Feedback(MyJobBaseModel):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="feedbacks")
 
     class Meta:
-        db_table = "myjob_myjob_feedback"
+        db_table = "findjob_findjob_feedback"
 
     def __str__(self):
         return self.content
@@ -44,7 +44,7 @@ class Banner(MyJobBaseModel):
     image_mobile = models.OneToOneField(File, on_delete=models.SET_NULL, null=True, related_name="banner_image_mobile")
 
     class Meta:
-        db_table = "myjob_myjob_banner"
+        db_table = "findjob_findjob_banner"
 
     def __str__(self):
         return str(self.id)
