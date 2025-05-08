@@ -40,6 +40,8 @@ class Banner(MyJobBaseModel):
                                default=var_sys.BANNER_TYPE[0][0])
     is_active = models.BooleanField(default=False)
     
+    image_url = models.URLField(null=True, blank=True)
+    
     image = models.OneToOneField(File, on_delete=models.SET_NULL, null=True, related_name="banner_image")
     image_mobile = models.OneToOneField(File, on_delete=models.SET_NULL, null=True, related_name="banner_image_mobile")
 

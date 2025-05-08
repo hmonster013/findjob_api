@@ -103,17 +103,44 @@ SERVICE_REDIS_PASSWORD = config('SERVICE_REDIS_PASSWORD')
 SERVICE_REDIS_DB = config('SERVICE_REDIS_DB', cast=int)
 
 # CELERY
-# CELERY_BROKER_URL = f"redis://{SERVICE_REDIS_USERNAME}:{SERVICE_REDIS_PASSWORD}@{SERVICE_REDIS_HOST}:{SERVICE_REDIS_PORT}/{SERVICE_REDIS_DB}"
-# CELERY_RESULT_BACKEND = f"redis://{SERVICE_REDIS_USERNAME}:{SERVICE_REDIS_PASSWORD}@{SERVICE_REDIS_HOST}:{SERVICE_REDIS_PORT}/{SERVICE_REDIS_DB}"
-CELERY_BROKER_URL = f"redis://:@findjob-redis:{SERVICE_REDIS_PORT}/{SERVICE_REDIS_DB}"
-CELERY_RESULT_BACKEND = f"redis://:@findjob-redis:{SERVICE_REDIS_PORT}/{SERVICE_REDIS_DB}"
+CELERY_BROKER_URL = f"redis://{SERVICE_REDIS_USERNAME}:{SERVICE_REDIS_PASSWORD}@{SERVICE_REDIS_HOST}:{SERVICE_REDIS_PORT}/{SERVICE_REDIS_DB}"
+CELERY_RESULT_BACKEND = f"redis://{SERVICE_REDIS_USERNAME}:{SERVICE_REDIS_PASSWORD}@{SERVICE_REDIS_HOST}:{SERVICE_REDIS_PORT}/{SERVICE_REDIS_DB}"
+# CELERY_BROKER_URL = f"redis://:@findjob-redis:{SERVICE_REDIS_PORT}/{SERVICE_REDIS_DB}"
+# CELERY_RESULT_BACKEND = f"redis://:@findjob-redis:{SERVICE_REDIS_PORT}/{SERVICE_REDIS_DB}"
 CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_SERIALIZER = 'json'
 CELERY_ACCEPT_CONTENT = ['json']
 CELERY_TIMEZONE = 'Asia/Ho_Chi_Minh'
 DJANGO_CELERY_BEAT_TZ_AWARE = True
 
+# Cấu hình CORS
+# CORS_ALLOWED_ORIGINS = [
+#     "http://127.0.0.1:4200",
+#     "http://localhost:4200",
+# ]
+
+# Nếu bạn muốn cho phép tất cả origins (chỉ dùng trong phát triển)
 CORS_ALLOW_ALL_ORIGINS = True
+
+# Cho phép các tiêu đề tùy chỉnh như Authorization
+CORS_ALLOW_HEADERS = [
+    'accept',
+    'authorization',
+    'content-type',
+    'user-agent',
+    'x-csrftoken',
+    'x-requested-with',
+]
+
+# Cho phép các phương thức HTTP
+CORS_ALLOW_METHODS = [
+    'DELETE',
+    'GET',
+    'OPTIONS',
+    'PATCH',
+    'POST',
+    'PUT',
+]
 
 MYJOB_AUTH = {
     "VERIFY_EMAIL_LINK_EXPIRE_SECONDS": 7200,
@@ -132,6 +159,17 @@ SOCIAL_AUTH_PIPELINE = (
     'social_core.pipeline.social_auth.load_extra_data',
     'social_core.pipeline.user.user_details'
 )
+
+# FIREBASE SETTINGS
+FIREBASE_CONFIG = {
+    "apiKey": config('FIREBASE_API_KEY', default=''),
+    "authDomain": config('FIREBASE_AUTH_DOMAIN', default=''),
+    "projectId": config('FIREBASE_PROJECT_ID', default=''),
+    "storageBucket": config('FIREBASE_STORAGE_BUCKET', default=''),
+    "messagingSenderId": config('FIREBASE_MESSAGING_SENDER_ID', default=''),
+    "appId": config('FIREBASE_APP_ID', default=''),
+    "databaseURL": config('FIREBASE_DATABASE_URL', default=''),
+}
 
 FIREBASE_CREDENTIALS_PATH = config('FIREBASE_CREDENTIALS_PATH', default='')
 FIREBASE_DATABASE_URL = config('FIREBASE_DATABASE_URL', default='')
@@ -300,6 +338,8 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
 STATIC_URL = "static/"
+STATICFILES_DIRS = [os.path.join(BASE_DIR, "findjob_api", "static")]
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field

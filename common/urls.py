@@ -7,4 +7,5 @@ urlpatterns = [
     path('districts/', views.get_districts),
     path('top-careers/', views.get_top_10_careers),
     path('all-careers/', views.get_all_careers),
+    path('cities/', views.get_cities),
 ]

@@ -35,7 +35,7 @@ class FeedbackSerializer(serializers.ModelSerializer):
 
 
 class BannerSerializer(serializers.ModelSerializer):
-    imageUrl = serializers.SerializerMethodField(method_name='get_image_url', read_only=True)
+    imageUrl = serializers.URLField(source='image_url', read_only=True)
     imageMobileUrl = serializers.SerializerMethodField(method_name='get_image_mobile_url', read_only=True)
     buttonText = serializers.CharField(source='button_text', read_only=True)
     description = serializers.CharField(read_only=True)

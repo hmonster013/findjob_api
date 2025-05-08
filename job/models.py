@@ -23,9 +23,11 @@ class JobPostBaseModel(models.Model):
 
 class JobPost(JobPostBaseModel):
     job_name = models.CharField(max_length=255)
-    slug = AutoSlugField(populate_from='job_name', unique=True,
+    slug = AutoSlugField(populate_from='job_name', 
+                         unique=True,
                          unique_with=['id'],
-                         slugify=slugify, max_length=300)
+                         slugify=slugify, 
+                         max_length=300)
     deadline = models.DateField()
     quantity = models.IntegerField()
     gender_required = models.CharField(max_length=1, choices=variable_system.GENDER_CHOICES,

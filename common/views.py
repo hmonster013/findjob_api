@@ -12,7 +12,8 @@ from .models import (
     District,
 )
 from .serializers import (
-    CareerSerializer
+    CareerSerializer,
+    CitySerializer
 )
 
 
@@ -46,7 +47,7 @@ def create_database(request):
         career = Career.objects.create(name=c["name"])
         data[c["id"]] = career.id
 
-    with open("C:/Users/khuy2/Desktop/map.json", "w", encoding="utf-8") as file:
+    with open("E:\\local_code\\Do_an\\find_job\\findjob_api\\data\\map.json", "w", encoding="utf-8") as file:
         json.dump({
             "career_map": data
         }, file, ensure_ascii=False)
@@ -205,3 +206,13 @@ def get_all_careers(request):
     except Exception as ex:
         helper.print_log_error("get_all_careers", ex)
         return var_res.response_data(status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+@api_view(["GET"])
+def get_cities(request):
+    try:
+        cities = City.objects.all().order_by('id')
+        serializer = CitySerializer(cities, many=True)
+        return var_res.response_data(data=serializer.data)
+    except Exception as ex:
+        helper.print_log_error(func_name="get_cities", error=ex)
+        return var_res.response_data(status=status.HTTP_500_INTERNAL_SERVER_ERROR, data=None)
