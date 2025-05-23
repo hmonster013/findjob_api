@@ -25,18 +25,18 @@ from authentication import permissions as perms_custom
 from rest_framework.response import Response
 from rest_framework import status
 from info.models import Resume
-from ..models import (
+from .models import (
     JobPost,
     SavedJobPost,
     JobPostActivity,
     JobPostNotification
 )
-from ..filters import (
+from .filters import (
     JobPostFilter,
     AliasedOrderingFilter,
     EmployerJobPostActivityFilter
 )
-from ..serializers import (
+from .serializers import (
     JobPostSerializer,
     JobSeekerJobPostActivitySerializer,
     EmployerJobPostActivitySerializer,

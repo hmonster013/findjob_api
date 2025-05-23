@@ -177,7 +177,7 @@ def get_districts(request):
 @api_view(http_method_names=["GET"])
 def get_top_10_careers(request):
     try:
-        queryset = Career.objects.annotate(num_job_posts=Count('job_posts')).order_by('-num_job_posts')[:10]
+        queryset = Career.objects.annotate(num_job_posts=Count('job_posts')).order_by('-num_job_posts')[:5]
         serializer = CareerSerializer(queryset, many=True, fields=['id', 'name', 'iconUrl', 'jobPostTotal'])
     except Exception as ex:
         helper.print_log_error("get_top_careers", ex)

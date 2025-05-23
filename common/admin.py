@@ -1,4 +1,3 @@
-import cloudinary.uploader
 from django.contrib import admin
 from django.utils.html import mark_safe
 from django import forms
@@ -15,26 +14,31 @@ from .models import (
     File
 )
 from django_admin_listfilter_dropdown.filters import (RelatedDropdownFilter)
+from helpers.cloudinary_service import CloudinaryService
+
 
 class LocationForm(forms.ModelForm):
     class Meta:
         model = Location
-        fields = "__all__"
+        fields = '__all__'
+
 
 class CareerForm(forms.ModelForm):
     icon_file = forms.FileField(required=False)
-    
+
     class Meta:
         model = Career
-        fields = "__all__"
-    
+        fields = '__all__'
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields["icon_file"].required = False
+        self.fields['icon_file'].required = False
+
 
 class LocationInlineAdmin(admin.StackedInline):
     model = Location
     extra = 1
+
 
 class CityAdmin(admin.ModelAdmin):
     list_display = ("id", "name",)
@@ -42,6 +46,7 @@ class CityAdmin(admin.ModelAdmin):
     list_display_links = ("id", "name",)
     ordering = ("id", 'name',)
     list_per_page = 25
+
 
 class DistrictAdmin(admin.ModelAdmin):
     list_display = ("id", "name", 'city')
@@ -53,6 +58,7 @@ class DistrictAdmin(admin.ModelAdmin):
 
     autocomplete_fields = ('city',)
     list_select_related = ('city',)
+
 
 class LocationAdmin(admin.ModelAdmin):
     list_display = ("id", "city", 'district', 'lat', 'lng', 'address')
@@ -69,6 +75,7 @@ class LocationAdmin(admin.ModelAdmin):
     list_select_related = ('city',)
 
     form = LocationForm
+
 
 class CareerAdmin(admin.ModelAdmin):
     list_display = ("id", "name", "show_icon", "app_icon_name")
@@ -99,29 +106,24 @@ class CareerAdmin(admin.ModelAdmin):
         if icon_file:
             try:
                 with transaction.atomic():
-                    career_image_upload_result = cloudinary.uploader.upload(
+                    public_id = None
+                    # Overwrite if image already exists
+                    if career.icon:
+                        path_list = career.icon.public_id.split('/')
+                        public_id = path_list[-1] if path_list else None
+                    # Upload
+                    career_image_upload_result = CloudinaryService.upload_image(
                         icon_file,
                         folder=settings.CLOUDINARY_DIRECTORY["career_image"],
-                        public_id=career.id
+                        public_id=public_id
                     )
                     
-                    career_image_data = {
-                        "public_id": career_image_upload_result["public_id"],
-                        "version": career_image_upload_result["version"],
-                        "format": career_image_upload_result["format"],
-                        "resource_type": career_image_upload_result["resource_type"],
-                        "uploaded_at": career_image_upload_result["created_at"],
-                        "bytes": career_image_upload_result["bytes"],
-                        "metadata": career_image_upload_result,
-                    }
-                    if career.icon:
-                        # Update icon
-                        for key, value in career_image_data.items():
-                            setattr(career.icon, key, value)
-                        career.icon.save()
-                    else:
-                        icon_new = File.objects.create(**career_image_data)
-                        career.icon = icon_new
+                    # Update or create file
+                    career.icon = File.update_or_create_file_with_cloudinary(
+                        career.icon,
+                        career_image_upload_result,
+                        File.CAREER_IMAGE_TYPE
+                    )
                     career.save()
             except Exception as ex:
                 helper.print_log_error("career_image_save_model", ex)

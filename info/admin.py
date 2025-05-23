@@ -1,5 +1,4 @@
 import concurrent.futures
-import cloudinary.uploader
 from django.conf import settings
 from django.contrib import admin
 from django import forms
@@ -25,6 +24,7 @@ from .models import (
 
 )
 from django_admin_listfilter_dropdown.filters import (DropdownFilter, ChoiceDropdownFilter)
+from helpers.cloudinary_service import CloudinaryService
 
 
 class CompanyImageInlineForm(forms.ModelForm):
@@ -118,14 +118,19 @@ class CompanyImageInlineAdmin(admin.StackedInline):
         if image:
             image_url = image.get_full_url()  # Get the full URL of the image
             image_alt = company_image.company.company_name  # Use the company name as alt text
-            
-        # Return HTML code for displaying the company image
+            # Return HTML code for displaying the company image
+            return mark_safe(
+                r"""<img src='{0}'
+                alt='{1}' style="border-radius: 2px;object-fit:cover;" width='450px' height='175px'/>""".format(
+                    image_url, image_alt)
+            )
         return mark_safe(
             r"""<img src='{0}'
             alt='{1}' style="border-radius: 2px;object-fit:cover;" width='45px' height='45px'/>""".format(
                 image_url, image_alt)
         )
 
+    show_image.short_description = "Image"
 
 # ADMIN
 class JobSeekerProfileAdmin(admin.ModelAdmin):
@@ -145,7 +150,7 @@ class JobSeekerProfileAdmin(admin.ModelAdmin):
 
 class ResumeAdmin(admin.ModelAdmin):
     list_display = ("id", "user", "title", "position", "experience", "academic_level",
-                    "type_of_workplace", "job_type", "is_active",)
+                    "type_of_workplace", "job_type", "type", "is_active",)
     list_display_links = ("id", "user", "title",)
     search_fields = ("id", "title", "user__email")
     list_filter = [
@@ -154,10 +159,11 @@ class ResumeAdmin(admin.ModelAdmin):
         ("academic_level", ChoiceDropdownFilter),
         ("type_of_workplace", ChoiceDropdownFilter),
         ("job_type", ChoiceDropdownFilter),
+        ("type", DropdownFilter),
         ("is_active", DropdownFilter),
     ]
     ordering = ('is_active',)
-    readonly_fields = ("type", 'show_resume_image',
+    readonly_fields = ("type", 'preview_pdf',
                        'job_seeker_profile', 'user')
     inlines = (EducationDetailInlineAdmin, ExperienceDetailInlineAdmin,
                CertificateInlineAdmin, LanguageSkillInlineAdmin,
@@ -166,34 +172,20 @@ class ResumeAdmin(admin.ModelAdmin):
     fields = ("title", "salary_min", "salary_max",
               "position", "experience", "academic_level",
               "type_of_workplace", "job_type", "city", "career",
-              "job_seeker_profile", "user", "type",
-              "is_active", "show_resume_image", "resume_file",
-              "description")
+              "job_seeker_profile", "user", "type", 'preview_pdf', "resume_file",
+              "description", "is_active")
 
     autocomplete_fields = ['city', 'career',
                            'company_viewers', 'company_savers']
     list_select_related = ('city', 'career',)
 
-    def show_resume_image(self, resume):
-        # Check if there is a resume
-        if resume:
-            # Get the cv file of the resume
+    def preview_pdf(self, resume):
+        if resume.file:
             cv_file = resume.file
-            # Set the default alt for the image to "No image"
-            image_alt = "No image"
-            # Set the default URL for the image to the default avatar URL
-            image_url = var_sys.AVATAR_DEFAULT["AVATAR"]
-            # If there is an image, change the URL and alt of the image
-            if cv_file:
-                # Prepare data for image file derived from PDF
-                image_url = cv_file.get_full_url().replace(f".{cv_file.format}", ".jpg")
-                image_alt = resume.title
-            # Return the image that has been formatted for safe display
-            return mark_safe(
-                f"<img src='{image_url}' alt='{image_alt}' style='border-radius: 2px;object-fit:cover;' width='45px' height='45px'/>"
-            )
+            return mark_safe(f'<iframe src="{cv_file.get_full_url()}" width="1000" height="800"></iframe>')
+        return "---"
 
-    show_resume_image.short_description = "Resume image"
+    preview_pdf.short_description = "CV Preview"
 
     form = ResumeForm
 
@@ -204,33 +196,23 @@ class ResumeAdmin(admin.ModelAdmin):
         if resume_file:
             try:
                 with transaction.atomic():
-                    # Upload PDF to cloudinary
-                    pdf_upload_result = cloudinary.uploader.upload(
-                        resume_file,
-                        folder=settings.CLOUDINARY_DIRECTORY["cv"],
-                        public_id=obj.id
-                    )
-                    
-                    # Prepare data for PDF file
-                    pdf_data = {
-                        "public_id": pdf_upload_result.get("public_id"),
-                        "version": pdf_upload_result.get("version"),
-                        "format": pdf_upload_result.get("format"),
-                        "resource_type": pdf_upload_result.get("resource_type"),
-                        "uploaded_at": pdf_upload_result.get("created_at"),
-                        "bytes": pdf_upload_result.get("bytes"),
-                        "metadata": pdf_upload_result
-                    }
-                    
-                    # Update or create PDF file
+                    public_id = None
+                    # Overwrite if image already exists
                     if obj.file:
-                        for key, value in pdf_data.items():
-                            setattr(obj.file, key, value)
-                        obj.file.save()
-                    else:
-                        pdf_file = File.objects.create(**pdf_data)
-                        obj.file = pdf_file
-
+                        path_list = obj.file.public_id.split('/')
+                        public_id = path_list[-1] if path_list else None
+                    # Upload PDF to cloudinary
+                    pdf_upload_result = CloudinaryService.upload_image(
+                        resume_file,
+                        settings.CLOUDINARY_DIRECTORY["cv"],
+                        public_id=public_id
+                    )
+                    # Update or create file
+                    obj.file = File.update_or_create_file_with_cloudinary(
+                        obj.file,
+                        pdf_upload_result,
+                        File.CV_TYPE
+                    )
                     obj.save()
 
             except Exception as ex:
@@ -239,7 +221,7 @@ class ResumeAdmin(admin.ModelAdmin):
 
 class CompanyAdmin(admin.ModelAdmin):
     inlines = [CompanyImageInlineAdmin]
-    list_display = ("id", "company_name", "field_operation", "company_email",
+    list_display = ("id", "show_company_image", "company_name", "field_operation", "company_email",
                     "company_phone", "employee_size", "tax_code", "user",)
     list_display_links = ("id", "company_name",)
     search_fields = ("id", "company_name", "field_operation", "company_email", "company_phone", "tax_code")
@@ -281,7 +263,7 @@ class CompanyAdmin(admin.ModelAdmin):
         # Return HTML code for displaying the company logo
         return mark_safe(
             r"""<img src='{0}'
-            alt='{1}' style="border-radius: 2px;object-fit:cover;" width='45px' height='45px'/>""".format(
+            alt='{1}' style="border-radius: 2px;object-fit:contain;" width='45px' height='45px'/>""".format(
                 company_logo_url, company_logo_alt)
         )
 
@@ -302,7 +284,7 @@ class CompanyAdmin(admin.ModelAdmin):
         # Return HTML code for displaying the company cover image
         return mark_safe(
             r"""<img src='{0}'
-            alt='{1}' style="border-radius: 2px;object-fit:cover;" width='45px' height='45px'/>""".format(
+            alt='{1}' style="border-radius: 2px;object-fit:cover;" width='450px' height='175px'/>""".format(
                 company_cover_image_url, company_cover_image_alt)
         )
 
@@ -327,32 +309,24 @@ class CompanyAdmin(admin.ModelAdmin):
         if logo_file:
             try:
                 with transaction.atomic():
-                    # Upload logo to cloudinary
-                    logo_upload_result = cloudinary.uploader.upload(
-                        logo_file,
-                        folder=settings.CLOUDINARY_DIRECTORY["logo"],
-                        public_id=company.id
-                    )
-                    
-                    # Prepare data for logo
-                    company_logo_data = {
-                        "public_id": logo_upload_result.get("public_id"),
-                        "version": logo_upload_result.get("version"),
-                        "format": logo_upload_result.get("format"),
-                        "resource_type": logo_upload_result.get("resource_type"),
-                        "uploaded_at": logo_upload_result.get("created_at"),
-                        "bytes": logo_upload_result.get("bytes"),
-                        "metadata": logo_upload_result
-                    }
-                    
-                    # Update or create logo
+                    public_id = None
+                    # Overwrite if image already exists
                     if company.logo:
-                        for key, value in company_logo_data.items():
-                            setattr(company.logo, key, value)
-                        company.logo.save()
-                    else:
-                        company_logo_new = File.objects.create(**company_logo_data)
-                        company.logo = company_logo_new
+                        path_list = company.logo.public_id.split('/')
+                        public_id = path_list[-1] if path_list else None
+                    # Upload logo to cloudinary
+                    logo_upload_result = CloudinaryService.upload_image(
+                        logo_file[0],
+                        settings.CLOUDINARY_DIRECTORY["logo"],
+                        public_id=public_id
+                    )
+                    # Update or create file
+                    company.logo = File.update_or_create_file_with_cloudinary(
+                        company.logo,
+                        logo_upload_result,
+                        File.LOGO_TYPE
+                    )
+                    company.save()
             except Exception as ex:
                 helper.print_log_error("company_image_save_model", ex)
 
@@ -360,32 +334,24 @@ class CompanyAdmin(admin.ModelAdmin):
         if company_cover_image_file:
             try:
                 with transaction.atomic():
-                    # Upload cover image to cloudinary
-                    company_cover_image_upload_result = cloudinary.uploader.upload(
-                        company_cover_image_file,
-                        folder=settings.CLOUDINARY_DIRECTORY["cover_image"],
-                        public_id=company.id
-                    )
-
-                    # Prepare data for cover image
-                    company_cover_image_data = {
-                        "public_id": company_cover_image_upload_result.get("public_id"),
-                        "version": company_cover_image_upload_result.get("version"),
-                        "format": company_cover_image_upload_result.get("format"),
-                        "resource_type": company_cover_image_upload_result.get("resource_type"),
-                        "uploaded_at": company_cover_image_upload_result.get("created_at"),
-                        "bytes": company_cover_image_upload_result.get("bytes"),
-                        "metadata": company_cover_image_upload_result
-                    }
-                    
-                    # Update or create cover image
+                    public_id = None
+                    # Overwrite if image already exists
                     if company.cover_image:
-                        for key, value in company_cover_image_data.items():
-                            setattr(company.cover_image, key, value)
-                        company.cover_image.save()
-                    else:
-                        company_cover_image_new = File.objects.create(**company_cover_image_data)
-                        company.cover_image = company_cover_image_new
+                        path_list = company.cover_image.public_id.split('/')
+                        public_id = path_list[-1] if path_list else None
+                    # Upload cover image to cloudinary
+                    company_cover_image_upload_result = CloudinaryService.upload_image(
+                        company_cover_image_file[0],
+                        settings.CLOUDINARY_DIRECTORY["cover_image"],
+                        public_id=public_id
+                    )
+                    # Update or create file
+                    company.cover_image = File.update_or_create_file_with_cloudinary(
+                        company.cover_image,
+                        company_cover_image_upload_result,
+                        File.COVER_IMAGE_TYPE
+                    )
+                    company.save()
             except Exception as ex:
                 helper.print_log_error("company_cover_image_save_model", ex)
 

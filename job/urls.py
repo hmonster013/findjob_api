@@ -1,47 +1,47 @@
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
-from .views import web_views
+from . import views
 
 app_router = DefaultRouter()
 
-web_router = DefaultRouter()
-web_router.register('private-job-posts', web_views.PrivateJobPostViewSet, basename='private-web-job-posts')
-web_router.register('job-posts', web_views.JobPostViewSet, basename="web-job-posts")
-web_router.register('job-seeker-job-posts-activity', web_views.JobSeekerJobPostActivityViewSet,
+router = DefaultRouter()
+router.register('private-job-posts', views.PrivateJobPostViewSet, basename='private-web-job-posts')
+router.register('job-posts', views.JobPostViewSet, basename="web-job-posts")
+router.register('job-seeker-job-posts-activity', views.JobSeekerJobPostActivityViewSet,
                     basename='web-job-seeker-job-posts-activity')
-web_router.register('employer-job-posts-activity', web_views.EmployerJobPostActivityViewSet,
+router.register('employer-job-posts-activity', views.EmployerJobPostActivityViewSet,
                     basename='web-employer-job-posts-activity')
-web_router.register('job-post-notifications', web_views.JobPostNotificationViewSet,
+router.register('job-post-notifications', views.JobPostNotificationViewSet,
                     basename='web-job-post-notifications')
 
 urlpatterns = [
     path('web/', include([
-        path('seach/job-suggest-title/', web_views.job_suggest_title_search),
-        path('', include(web_router.urls)),
+        path('seach/job-suggest-title/', views.job_suggest_title_search),
+        path('', include(router.urls)),
         path('statistics/', include([
-            path('employer-general-statistics/', web_views.EmployerStatisticViewSet.as_view({
+            path('employer-general-statistics/', views.EmployerStatisticViewSet.as_view({
                 'get': 'general_statistics',
             })),
-            path('employer-recruitment-statistics/', web_views.EmployerStatisticViewSet.as_view({
+            path('employer-recruitment-statistics/', views.EmployerStatisticViewSet.as_view({
                 'post': 'recruitment_statistics',
             })),
-            path('employer-candidate-statistics/', web_views.EmployerStatisticViewSet.as_view({
+            path('employer-candidate-statistics/', views.EmployerStatisticViewSet.as_view({
                 'post': 'candidate_statistics',
             })),
-            path('employer-application-statistics/', web_views.EmployerStatisticViewSet.as_view({
+            path('employer-application-statistics/', views.EmployerStatisticViewSet.as_view({
                 'post': 'application_statistics',
             })),
-            path('employer-recruitment-statistics-by-rank/', web_views.EmployerStatisticViewSet.as_view({
+            path('employer-recruitment-statistics-by-rank/', views.EmployerStatisticViewSet.as_view({
                 'post': 'recruitment_statistics_by_rank',
             })),
 
-            path('job-seeker-general-statistics/', web_views.JobSeekerStatisticViewSet.as_view({
+            path('job-seeker-general-statistics/', views.JobSeekerStatisticViewSet.as_view({
                 'get': 'general_statistics',
             })),
-            path('job-seeker-total-view/', web_views.JobSeekerStatisticViewSet.as_view({
+            path('job-seeker-total-view/', views.JobSeekerStatisticViewSet.as_view({
                 'get': 'total_view',
             })),
-            path('job-seeker-activity-statistics/', web_views.JobSeekerStatisticViewSet.as_view({
+            path('job-seeker-activity-statistics/', views.JobSeekerStatisticViewSet.as_view({
                 'get': 'activity_statistics',
             })),
         ])),
