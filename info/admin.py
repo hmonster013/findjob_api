@@ -28,12 +28,47 @@ from helpers.cloudinary_service import CloudinaryService
 
 
 class CompanyImageInlineForm(forms.ModelForm):
-    image_file = forms.FileField(required=False)
+    image_file = forms.FileField(required=False, label="Upload Image")
 
     class Meta:
         model = CompanyImage
-        fields = '__all__'
+        fields = ['image', 'image_file']
+    
+    def save(self, commit=True):
+        instance = super().save(commit=False)
+        image_file = self.cleaned_data.get('image_file')
+        
+        if image_file:
+            try:
+                with transaction.atomic():
+                    public_id = None
+                    # Kiểm tra nếu đã có bản ghi File hiện tại
+                    if instance.image:
+                        path_list = instance.image.public_id.split('/')
+                        public_id = path_list[-1] if path_list else None
 
+                    # Tải lên Cloudinary
+                    upload_result = CloudinaryService.upload_image(
+                        image_file,
+                        settings.CLOUDINARY_DIRECTORY["company_image"],
+                        public_id=public_id
+                    )
+
+                    # Cập nhật hoặc tạo bản ghi File
+                    file_instance = File.update_or_create_file_with_cloudinary(
+                        instance.image,
+                        upload_result,
+                        File.COMPANY_IMAGE_TYPE
+                    )
+
+                    # Gán file_instance vào instance.image
+                    instance.image = file_instance
+            except Exception as ex:
+                self.add_error("image_file", f"Error uploading image: {str(ex)}")
+                
+        if commit:
+            instance.save()
+        return instance
 
 class CompanyForm(forms.ModelForm):
     company_image_file = forms.FileField(required=False)
@@ -103,7 +138,7 @@ class CompanyImageInlineAdmin(admin.StackedInline):
     fk_name = 'company'
     extra = 1
     max_num = 5
-    fields = ('show_image',)
+    fields = ('show_image','image_file')
     readonly_fields = ('show_image',)
     form = CompanyImageInlineForm
 
@@ -112,11 +147,9 @@ class CompanyImageInlineAdmin(admin.StackedInline):
         image_url = var_sys.NO_IMAGE
         image_alt = "No image"
         
-        # Retrieve the company image
-        image = company_image.image
         # If an image exists, update the URL and alt text
-        if image:
-            image_url = image.get_full_url()  # Get the full URL of the image
+        if company_image.image:
+            image_url = company_image.image.get_full_url()  # Get the full URL of the image
             image_alt = company_image.company.company_name  # Use the company name as alt text
             # Return HTML code for displaying the company image
             return mark_safe(
@@ -130,7 +163,7 @@ class CompanyImageInlineAdmin(admin.StackedInline):
                 image_url, image_alt)
         )
 
-    show_image.short_description = "Image"
+    show_image.short_description = "Image Preview"
 
 # ADMIN
 class JobSeekerProfileAdmin(admin.ModelAdmin):
