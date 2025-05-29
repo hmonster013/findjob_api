@@ -364,7 +364,8 @@ class JobSeekerJobPostActivityViewSet(viewsets.ViewSet,
                       companyId=F('job_post__company_id'),
                       companyName=F('job_post__company__company_name'),
                       companySlug=F('job_post__company__slug'),
-                      companyImageUrl=F('job_post__company__company_image_url'),
+                    #   companyImageUrl=F('job_post__company__company_image_url'),
+                      companyImageUrl=F('job_post__company__logo'),
                       jobPostTitle=F('job_post__job_name')) \
             .values('id', 'userId', 'fullName', 'userEmail',
                     'companyId', "companyName", "companySlug", 'companyImageUrl',
@@ -387,8 +388,7 @@ class JobSeekerJobPostActivityViewSet(viewsets.ViewSet,
         job_post = job_post_activity.job_post
         company = job_post.company
 
-        app_env = settings.APP_ENVIRONMENT
-        domain = settings.DOMAIN_CLIENT[app_env]
+        domain = settings.DOMAIN_CLIENT["job_seeker"]
         subject = f"Xác nhận ứng tuyển: {job_post.job_name}"
         to = [user.email]
         data = {

@@ -50,9 +50,13 @@ REDIRECT_LOGIN_CLIENT = {
     "EMPLOYER": "dang-nhap-nha-tuyen-dung"
 }
 
+# Web client URL
+WEB_JOB_SEEKER_CLIENT_URL = config("WEB_JOB_SEEKER_CLIENT_URL")
+WEB_EMPLOYER_CLIENT_URL = config("WEB_EMPLOYER_CLIENT_URL")
+
 DOMAIN_CLIENT = {
-    "development": "http://localhost:3000/",
-    "production": config('WEB_CLIENT_URL'),
+    "job_seeker": WEB_JOB_SEEKER_CLIENT_URL if WEB_JOB_SEEKER_CLIENT_URL else "http://127.0.0.1:3000/",
+    "employer": WEB_EMPLOYER_CLIENT_URL if WEB_EMPLOYER_CLIENT_URL else "http://localhost:3000/",
 }
 
 # FACEBOOK CONFIGURATION
@@ -208,7 +212,10 @@ CLOUDINARY_DIRECTORY = {
     "company_image": f"{CLOUDINARY_BUCKET_NAME}/{APP_ENVIRONMENT}/company-image/{datetime.now().year}/{datetime.now().month}/",
     "career_image": f"{CLOUDINARY_BUCKET_NAME}/{APP_ENVIRONMENT}/career-images/{datetime.now().year}/{datetime.now().month}/",
     "web_banner": f"{CLOUDINARY_BUCKET_NAME}/{APP_ENVIRONMENT}/banners/web-banners/{datetime.now().year}/{datetime.now().month}/",
-    "mobile_banner": f"{CLOUDINARY_BUCKET_NAME}/{APP_ENVIRONMENT}/banners/mobile-banners/{datetime.now().year}/{datetime.now().month}/"
+    "mobile_banner": f"{CLOUDINARY_BUCKET_NAME}/{APP_ENVIRONMENT}/banners/mobile-banners/{datetime.now().year}/{datetime.now().month}/",
+    "system": f"{CLOUDINARY_BUCKET_NAME}/system/",
+    "icons": f"{CLOUDINARY_BUCKET_NAME}/icons/",
+    "about_us": f"{CLOUDINARY_BUCKET_NAME}/about_us/",
 }
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/

@@ -78,7 +78,7 @@ class File(CommonBaseModel):
         return file
     
     class Meta:
-        db_table = "myjob_files"
+        db_table = "findjob_files"
         ordering = ['-create_at']
         
 class City(CommonBaseModel):
@@ -118,7 +118,10 @@ class Location(CommonBaseModel):
         db_table = "findjob_common_location"
 
     def __str__(self):
-        return f"{self.city.name} - {self.district.name} - {self.address}"
+        city_name = self.city.name if self.city else ""
+        district_name = self.district.name if self.district else ""
+        address = self.address if self.address else ""
+        return f"{city_name} - {district_name} - {address}"
 
 
 class Career(CommonBaseModel):

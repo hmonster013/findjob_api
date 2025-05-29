@@ -1,4 +1,3 @@
-import cloudinary.uploader
 from django.conf import settings
 from django.contrib import admin
 from django.utils.html import mark_safe
@@ -16,6 +15,7 @@ from django_admin_listfilter_dropdown.filters import (
 )
 from console.jobs import queue_mail
 from configs import variable_system as var_sys
+from helpers.cloudinary_service import CloudinaryService
 
 class UserForm(forms.ModelForm):
     avatar_file = forms.FileField(required=False)
@@ -91,51 +91,44 @@ class UserAdmin(admin.ModelAdmin):
             password_edit = form.data.get("password_edit", None)
             if password_edit:
                 user.set_password(password_edit)
-            
+
             old_user = User.objects.filter(id=user.id).first()
-        
+
+        # save
         super().save_model(request, user, form, change)
-        if "avatar_file" in request.FILES:
-            file = request.FILES["avatar_file"]
+        if 'avatar_file' in request.FILES:
+            file = request.FILES['avatar_file']
             try:
+                # Start transaction
                 with transaction.atomic():
-                    avatar_upload_result = cloudinary.uploader.upload(
-                        file,
-                        folder=settings.CLOUDINARY_DIRECTORY["avatar"],
-                        public_id=user.id
-                    )
-                    
-                    avatar_data = {
-                        "public_id": avatar_upload_result.get("public_id"),
-                        "version": avatar_upload_result.get("version"),
-                        "format": avatar_upload_result.get("format"),
-                        "resource_type": avatar_upload_result.get("resource_type"),
-                        "uploaded_at": avatar_upload_result.get("created_at"),
-                        "bytes": avatar_upload_result.get("bytes"),
-                        "metadata": avatar_upload_result
-                    }
-                    
+                    public_id = None
+                    # Overwrite if image already exists
                     if user.avatar:
-                        for key, value in avatar_data.items():
-                            setattr(user.avatar, key, value)
-                        user.avatar.save()
-                    else:
-                        avatar = File(**avatar_data)
-                        avatar.save()
-                        user.avatar = avatar
-                    
+                        path_list = user.avatar.public_id.split('/')
+                        public_id = path_list[-1] if path_list else None
+                    # Upload to cloudinary
+                    avatar_upload_result = CloudinaryService.upload_image(
+                        file,
+                        settings.CLOUDINARY_DIRECTORY["avatar"],
+                        public_id=public_id
+                    )
+                    # Update or create file
+                    user.avatar = File.update_or_create_file_with_cloudinary(
+                        user.avatar,
+                        avatar_upload_result,
+                        File.AVATAR_TYPE
+                    )
                     user.save()
             except Exception as ex:
                 helper.print_log_error("user_save_model", ex)
-        
+
         if change:
             new_is_active = user.is_active
             if old_user and old_user.is_active and not new_is_active:
+                # Send an account deactivation email
                 queue_mail.send_an_account_deactivation_email.delay(
                     to=[user.email],
-                    full_name=user.full_name, 
-                    email=user.email
-                )
+                    full_name=user.full_name, email=user.email)
 
 class ForgotPasswordTokeAdmin(admin.ModelAdmin):
     list_display = ("id", "token", "code", "expired_at", "is_active", "platform", "user")
