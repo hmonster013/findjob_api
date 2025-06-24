@@ -1,6 +1,5 @@
 import datetime
 from datetime import date
-import cloudinary.uploader
 from django.conf import settings
 from configs import variable_system as var_sys
 from configs.messages import ERROR_MESSAGES
@@ -28,7 +27,7 @@ from common.models import (
 
 from authentication import serializers as auth_serializers
 from common import serializers as common_serializers
-
+from helpers.cloudinary_service import CloudinaryService
 
 class CompanyImageSerializer(serializers.ModelSerializer):
     imageUrl = serializers.SerializerMethodField(
@@ -81,22 +80,15 @@ class CompanyImageSerializer(serializers.ModelSerializer):
                 company_image = CompanyImage.objects.create(
                     company=request.user.company)
                 # Upload the file to Cloudinary
-                company_image_upload_result = cloudinary.uploader.upload(
+                company_image_upload_result = CloudinaryService.upload_image(
                     file,
-                    folder=settings.CLOUDINARY_DIRECTORY["company_image"],
-                    public_id=company_image.id
+                    settings.CLOUDINARY_DIRECTORY["company_image"]
                 )
-
-                # Create a new File object for the uploaded image
-                image = File.objects.create(
-                    public_id=company_image_upload_result.get("public_id"),
-                    version=company_image_upload_result.get("version"),
-                    format=company_image_upload_result.get("format"),
-                    resource_type=company_image_upload_result.get(
-                        "resource_type"),
-                    uploaded_at=company_image_upload_result.get("created_at"),
-                    bytes=company_image_upload_result.get("bytes"),
-                    metadata=company_image_upload_result
+                # Create file
+                image = File.update_or_create_file_with_cloudinary(
+                    None,
+                    company_image_upload_result,
+                    File.COMPANY_IMAGE_TYPE
                 )
                 # Set the image of the CompanyImage object to the uploaded image
                 company_image.image = image
@@ -312,30 +304,23 @@ class LogoCompanySerializer(serializers.ModelSerializer):
 
         try:
             with transaction.atomic():
-                # Upload the logo to Cloudinary
-                logo_upload_result = cloudinary.uploader.upload(file,
-                                                                folder=settings.CLOUDINARY_DIRECTORY["logo"],
-                                                                public_id=company.id)
-                # Prepare the data for the company logo
-                company_logo_data = {
-                    "public_id": logo_upload_result.get("public_id"),
-                    "version": logo_upload_result.get("version"),
-                    "format": logo_upload_result.get("format"),
-                    "resource_type": logo_upload_result.get("resource_type"),
-                    "uploaded_at": logo_upload_result.get("created_at"),
-                    "bytes": logo_upload_result.get("bytes"),
-                    "metadata": logo_upload_result
-                }
-                # Check if the company already has a logo
+                public_id = None
+                # Overwrite if image already exists
                 if company.logo:
-                    # Update the existing logo
-                    for key, value in company_logo_data.items():
-                        setattr(company.logo, key, value)
-                    company.logo.save()
-                else:
-                    # Create a new logo if it doesn't exist
-                    company_logo = File.objects.create(**company_logo_data)
-                    company.logo = company_logo
+                    path_list = company.logo.public_id.split('/')
+                    public_id = path_list[-1] if path_list else None
+                # Upload the logo to Cloudinary
+                logo_upload_result = CloudinaryService.upload_image(
+                    file,
+                    settings.CLOUDINARY_DIRECTORY["logo"],
+                    public_id=public_id
+                )
+                # Update or create file
+                company.logo = File.update_or_create_file_with_cloudinary(
+                    company.logo,
+                    logo_upload_result,
+                    File.LOGO_TYPE
+                )
                 company.save()
 
                 # Update the company avatar in Firebase
@@ -370,35 +355,24 @@ class CompanyCoverImageSerializer(serializers.ModelSerializer):
 
         try:
             with transaction.atomic():
-                # Upload the company cover image to Cloudinary
-                company_cover_image_upload_result = cloudinary.uploader.upload(file,
-                                                                               folder=settings.CLOUDINARY_DIRECTORY[
-                                                                                   "cover_image"],
-                                                                               public_id=company.id)
-                # Prepare the data for the company cover image
-                company_cover_image_data = {
-                    "public_id": company_cover_image_upload_result.get("public_id"),
-                    "version": company_cover_image_upload_result.get("version"),
-                    "format": company_cover_image_upload_result.get("format"),
-                    "resource_type": company_cover_image_upload_result.get("resource_type"),
-                    "uploaded_at": company_cover_image_upload_result.get("created_at"),
-                    "bytes": company_cover_image_upload_result.get("bytes"),
-                    "metadata": company_cover_image_upload_result
-                }
-                # Check if the company already has a cover image
+                public_id = None
+                # Overwrite if image already exists
                 if company.cover_image:
-                    # Update the existing cover image
-                    for key, value in company_cover_image_data.items():
-                        setattr(company.cover_image, key, value)
-                    company.cover_image.save()
-                else:
-                    # Create a new cover image if it doesn't exist
-                    cover_image_new = File.objects.create(
-                        **company_cover_image_data)
-                    company.cover_image = cover_image_new
-
-            # Save the company instance to reflect the changes
-            company.save()
+                    path_list = company.cover_image.public_id.split('/')
+                    public_id = path_list[-1] if path_list else None
+                # Upload the company cover image to Cloudinary
+                company_cover_image_upload_result = CloudinaryService.upload_image(
+                    file,
+                    settings.CLOUDINARY_DIRECTORY["cover_image"],
+                    public_id=public_id
+                )
+                # Update or create file
+                company.cover_image = File.update_or_create_file_with_cloudinary(
+                    company.cover_image,
+                    company_cover_image_upload_result,
+                    File.COVER_IMAGE_TYPE
+                )
+                company.save()
             return company
         except:
             return None
@@ -509,32 +483,23 @@ class CvSerializer(serializers.ModelSerializer):
         # Extract the PDF file from validated data
         pdf_file = validated_data.pop('file')
 
-        # Upload the PDF file to Cloudinary
-        pdf_upload_result = cloudinary.uploader.upload(pdf_file,
-                                                       folder=settings.CLOUDINARY_DIRECTORY["cv"],
-                                                       public_id=instance.id)
-
-        # Prepare the data for the PDF file
-        pdf_data = {
-            "public_id": pdf_upload_result.get("public_id"),
-            "version": pdf_upload_result.get("version"),
-            "format": pdf_upload_result.get("format"),
-            "resource_type": pdf_upload_result.get("resource_type"),
-            "uploaded_at": pdf_upload_result.get("created_at"),
-            "bytes": pdf_upload_result.get("bytes"),
-            "metadata": pdf_upload_result
-        }
-
-        # Update or create the PDF file
+        public_id = None
+        # Overwrite if image already exists
         if instance.file:
-            # Update existing PDF file
-            for key, value in pdf_data.items():
-                setattr(instance.file, key, value)
-            instance.file.save()
-        else:
-            # Create a new PDF file if it doesn't exist
-            instance.file = File.objects.create(**pdf_data)
-
+            path_list = instance.file.public_id.split('/')
+            public_id = path_list[-1] if path_list else None
+        # Upload the PDF file to Cloudinary
+        pdf_upload_result = CloudinaryService.upload_image(
+            pdf_file,
+            settings.CLOUDINARY_DIRECTORY["cv"],
+            public_id=public_id
+        )
+        # Update or create file
+        instance.file = File.update_or_create_file_with_cloudinary(
+            instance.file,
+            pdf_upload_result,
+            File.CV_TYPE
+        )
         # Save the instance to ensure any other changes are persisted
         instance.save()
 
@@ -783,23 +748,17 @@ class ResumeSerializer(serializers.ModelSerializer):
                                            job_seeker_profile=job_seeker_profile)
 
             # Upload the PDF file to Cloudinary and get the upload result
-            pdf_upload_result = cloudinary.uploader.upload(pdf_file,
-                                                           folder=settings.CLOUDINARY_DIRECTORY["cv"],
-                                                           public_id=resume.id)
-
-            # Create a new File instance with the details from the Cloudinary upload result
-            cv_file = File.objects.create(
-                public_id=pdf_upload_result.get('public_id'),
-                version=pdf_upload_result.get('version'),
-                format=pdf_upload_result.get('format'),
-                resource_type=pdf_upload_result.get('resource_type'),
-                uploaded_at=pdf_upload_result.get('created_at'),
-                bytes=pdf_upload_result.get('bytes'),
-                metadata=pdf_upload_result
+            pdf_upload_result = CloudinaryService.upload_image(
+                pdf_file,
+                settings.CLOUDINARY_DIRECTORY["cv"]
             )
-
-            # Associate the uploaded file with the resume and save the changes
-            resume.file = cv_file
+            # Update or create file
+            resume.file = File.update_or_create_file_with_cloudinary(
+                resume.file,
+                pdf_upload_result,
+                File.CV_TYPE
+            )
+            # Save the resume instance to reflect the changes
             resume.save()
 
             # Return the newly created resume instance
@@ -1039,11 +998,13 @@ class EducationSerializer(serializers.ModelSerializer):
                 self.fields.pop(field_name)
 
     def validate(self, attrs):
-        if EducationDetail.objects.count() >= 10:
-            raise serializers.ValidationError(
-                {'errorMessage': ERROR_MESSAGES["MAXIMUM_EDUCATION"]})
+        resume = attrs.get('resume')
+        if resume and EducationDetail.objects.filter(resume=resume).count() >= 10:
+            raise serializers.ValidationError({
+                'errorMessage': ERROR_MESSAGES["MAXIMUM_EDUCATION"]
+            })
         return attrs
-
+    
     class Meta:
         model = EducationDetail
         fields = ('id', 'degreeName', 'major', 'trainingPlaceName',
@@ -1086,9 +1047,11 @@ class ExperienceSerializer(serializers.ModelSerializer):
                 self.fields.pop(field_name)
 
     def validate(self, attrs):
-        if ExperienceDetail.objects.count() >= 10:
-            raise serializers.ValidationError(
-                {'errorMessage': ERROR_MESSAGES["MAXIMUM_EXPERIENCE"]})
+        resume = attrs.get('resume')
+        if resume and ExperienceDetail.objects.filter(resume=resume).count() >= 10:
+            raise serializers.ValidationError({
+                'errorMessage': ERROR_MESSAGES["MAXIMUM_EXPERIENCE"]
+            })
         return attrs
 
     class Meta:
@@ -1130,10 +1093,13 @@ class CertificateSerializer(serializers.ModelSerializer):
             for field_name in existing - allowed:
                 self.fields.pop(field_name)
 
+    
     def validate(self, attrs):
-        if Certificate.objects.count() >= 10:
-            raise serializers.ValidationError(
-                {'errorMessage': ERROR_MESSAGES["MAXIMUM_CERTIFICATE"]})
+        resume = attrs.get('resume')
+        if resume and Certificate.objects.filter(resume=resume).count() >= 10:
+            raise serializers.ValidationError({
+                'errorMessage': ERROR_MESSAGES["MAXIMUM_CERTIFICATE"]
+            })
         return attrs
 
     class Meta:
@@ -1216,13 +1182,14 @@ class AdvancedSkillSerializer(serializers.ModelSerializer):
             existing = set(self.fields)
             for field_name in existing - allowed:
                 self.fields.pop(field_name)
-
+    
     def validate(self, attrs):
-        if AdvancedSkill.objects.count() >= 15:
-            raise serializers.ValidationError(
-                {'errorMessage': ERROR_MESSAGES["MAXIMUM_ADVANCED"]})
+        resume = attrs.get('resume')
+        if resume and AdvancedSkill.objects.filter(resume=resume).count() >= 15:
+            raise serializers.ValidationError({
+                'errorMessage': ERROR_MESSAGES["MAXIMUM_ADVANCED"]
+            })
         return attrs
-
     class Meta:
         model = AdvancedSkill
         fields = ('id', 'name', 'level', 'resume', "resumeId")

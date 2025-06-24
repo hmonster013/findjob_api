@@ -29,6 +29,8 @@ MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 BASE_URL = 'http://localhost:8000'
 
+COMPANY_NAME = 'FindJob'
+
 AUTH_USER_MODEL = 'authentication.User'
 
 REST_FRAMEWORK = {
@@ -46,8 +48,8 @@ REST_FRAMEWORK = {
 }
 
 REDIRECT_LOGIN_CLIENT = {
-    "JOB_SEEKER": "dang-nhap-ung-vien",
-    "EMPLOYER": "dang-nhap-nha-tuyen-dung"
+    "JOB_SEEKER": "dang-nhap",
+    "EMPLOYER": "dang-nhap"
 }
 
 # Web client URL
@@ -55,8 +57,9 @@ WEB_JOB_SEEKER_CLIENT_URL = config("WEB_JOB_SEEKER_CLIENT_URL")
 WEB_EMPLOYER_CLIENT_URL = config("WEB_EMPLOYER_CLIENT_URL")
 
 DOMAIN_CLIENT = {
-    "job_seeker": WEB_JOB_SEEKER_CLIENT_URL if WEB_JOB_SEEKER_CLIENT_URL else "http://127.0.0.1:3000/",
-    "employer": WEB_EMPLOYER_CLIENT_URL if WEB_EMPLOYER_CLIENT_URL else "http://localhost:3000/",
+    "job_seeker": WEB_JOB_SEEKER_CLIENT_URL if WEB_JOB_SEEKER_CLIENT_URL else "http://127.0.0.1:4200/",
+    "employer": WEB_EMPLOYER_CLIENT_URL if WEB_EMPLOYER_CLIENT_URL else "http://localhost:4200/",
+    "development": WEB_EMPLOYER_CLIENT_URL if WEB_EMPLOYER_CLIENT_URL else "http://localhost:4200/",
 }
 
 # FACEBOOK CONFIGURATION
@@ -226,7 +229,7 @@ SECRET_KEY = "django-insecure-k!_lx8uk2xb4_5je6-1mc1y7)l9=@15a=fq-az0i24n4vl9nax
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["*"]
 
 # Application definition
 

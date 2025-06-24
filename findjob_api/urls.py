@@ -54,6 +54,7 @@ urlpatterns = [
             path('info/', include('info.urls')),
             path('job/', include('job.urls')),
             path('findjob/', include('findjob.urls')),
+            path('chatbot/', include('chatbot.urls')),
         ]
     ))
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

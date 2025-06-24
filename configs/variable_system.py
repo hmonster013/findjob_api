@@ -46,49 +46,95 @@ COMPANY_INFO = {
 
 ABOUT_US_IMAGE_URLS = {
     "JOB_SEEKER": {
-        "FEEDBACK_GUIDE": f"{settings.CLOUDINARY_PATH.format('1')}{settings.CLOUDINARY_DIRECTORY['about_us']}job_seeker_feedback_guide.png",
-        "ACHIEVEMENTS": f"{settings.CLOUDINARY_PATH.format('1')}{settings.CLOUDINARY_DIRECTORY['about_us']}job_seeker_achievements.png",
+        "FEEDBACK_GUIDE": "https://ssl.cdn-redfin.com/system_files/media/793544_JPG/genLdpUgcMediaBrowserUrlComp/item_0.jpg",
+        "ACHIEVEMENTS": "https://ssl.cdn-redfin.com/system_files/media/793544_JPG/genLdpUgcMediaBrowserUrlComp/item_0.jpg",
     },
     "EMPLOYER": {
-        "FEEDBACK_GUIDE": f"{settings.CLOUDINARY_PATH.format('1')}{settings.CLOUDINARY_DIRECTORY['about_us']}job_seeker_feedback_guide.png",
-        "ACHIEVEMENTS": f"{settings.CLOUDINARY_PATH.format('1')}{settings.CLOUDINARY_DIRECTORY['about_us']}employer_achievements.png",
+        "FEEDBACK_GUIDE": "https://ssl.cdn-redfin.com/system_files/media/793544_JPG/genLdpUgcMediaBrowserUrlComp/item_0.jpg",
+        "ACHIEVEMENTS": "https://ssl.cdn-redfin.com/system_files/media/793544_JPG/genLdpUgcMediaBrowserUrlComp/item_0.jpg",
     }
 }
 
 CHATBOT_ICONS = {
     # Job Seeker
-    "job_seeker_search_job": f"{settings.CLOUDINARY_PATH.format('1')}{settings.CLOUDINARY_DIRECTORY['icons']}job_seeker_search_job.png",
-    "job_seeker_search_company": f"{settings.CLOUDINARY_PATH.format('1')}{settings.CLOUDINARY_DIRECTORY['icons']}job_seeker_search_company.png",
-    "job_seeker_manage_profile": f"{settings.CLOUDINARY_PATH.format('1')}{settings.CLOUDINARY_DIRECTORY['icons']}job_seeker_manage_profile.png",
-    "job_seeker_track_application_status": f"{settings.CLOUDINARY_PATH.format('1')}{settings.CLOUDINARY_DIRECTORY['icons']}job_seeker_track_application_status.png",
-    "job_seeker_manage_all_profile": f"{settings.CLOUDINARY_PATH.format('1')}{settings.CLOUDINARY_DIRECTORY['icons']}job_seeker_manage_all_profile.png",
-    "job_seeker_myjob_profile": f"{settings.CLOUDINARY_PATH.format('1')}{settings.CLOUDINARY_DIRECTORY['icons']}job_seeker_myjob_profile.png",
-    "job_seeker_attached_profile": f"{settings.CLOUDINARY_PATH.format('1')}{settings.CLOUDINARY_DIRECTORY['icons']}job_seeker_attached_profile.png",
-    "job_seeker_about_us_target_1": f"{settings.CLOUDINARY_PATH.format('1')}{settings.CLOUDINARY_DIRECTORY['icons']}job_seeker_about_us_target_1.png",
-    "job_seeker_about_us_target_2": f"{settings.CLOUDINARY_PATH.format('1')}{settings.CLOUDINARY_DIRECTORY['icons']}job_seeker_about_us_target_2.png",
-    "job_seeker_about_us_target_3": f"{settings.CLOUDINARY_PATH.format('1')}{settings.CLOUDINARY_DIRECTORY['icons']}job_seeker_about_us_target_3.png",
-    "job_seeker_about_us_target_4": f"{settings.CLOUDINARY_PATH.format('1')}{settings.CLOUDINARY_DIRECTORY['icons']}job_seeker_about_us_target_4.png",
+    "job_seeker_search_job": "https://ssl.cdn-redfin.com/system_files/media/793544_JPG/genLdpUgcMediaBrowserUrlComp/item_0.jpg",
+    "job_seeker_search_company": "https://ssl.cdn-redfin.com/system_files/media/793544_JPG/genLdpUgcMediaBrowserUrlComp/item_0.jpg",
+    "job_seeker_manage_profile": "https://ssl.cdn-redfin.com/system_files/media/793544_JPG/genLdpUgcMediaBrowserUrlComp/item_0.jpg",
+    "job_seeker_track_application_status": "https://ssl.cdn-redfin.com/system_files/media/793544_JPG/genLdpUgcMediaBrowserUrlComp/item_0.jpg",
+    "job_seeker_manage_all_profile": "https://ssl.cdn-redfin.com/system_files/media/793544_JPG/genLdpUgcMediaBrowserUrlComp/item_0.jpg",
+    "job_seeker_myjob_profile": "https://ssl.cdn-redfin.com/system_files/media/793544_JPG/genLdpUgcMediaBrowserUrlComp/item_0.jpg",
+    "job_seeker_attached_profile": "https://ssl.cdn-redfin.com/system_files/media/793544_JPG/genLdpUgcMediaBrowserUrlComp/item_0.jpg",
+    "job_seeker_about_us_target_1": "https://ssl.cdn-redfin.com/system_files/media/793544_JPG/genLdpUgcMediaBrowserUrlComp/item_0.jpg",
+    "job_seeker_about_us_target_2": "https://ssl.cdn-redfin.com/system_files/media/793544_JPG/genLdpUgcMediaBrowserUrlComp/item_0.jpg",
+    "job_seeker_about_us_target_3": "https://ssl.cdn-redfin.com/system_files/media/793544_JPG/genLdpUgcMediaBrowserUrlComp/item_0.jpg",
+    "job_seeker_about_us_target_4": "https://ssl.cdn-redfin.com/system_files/media/793544_JPG/genLdpUgcMediaBrowserUrlComp/item_0.jpg",
     # Employer
-    "employer_search_candidate": f"{settings.CLOUDINARY_PATH.format('1')}{settings.CLOUDINARY_DIRECTORY['icons']}employer_search_candidate.png",
-    "employer_manage_candidate": f"{settings.CLOUDINARY_PATH.format('1')}{settings.CLOUDINARY_DIRECTORY['icons']}employer_manage_candidate.png",
-    "employer_update_company_info": f"{settings.CLOUDINARY_PATH.format('1')}{settings.CLOUDINARY_DIRECTORY['icons']}employer_update_company_info.png",
+    "employer_search_candidate": "https://ssl.cdn-redfin.com/system_files/media/793544_JPG/genLdpUgcMediaBrowserUrlComp/item_0.jpg",
+    "employer_manage_candidate": "https://ssl.cdn-redfin.com/system_files/media/793544_JPG/genLdpUgcMediaBrowserUrlComp/item_0.jpg",
+    "employer_update_company_info": "https://ssl.cdn-redfin.com/system_files/media/793544_JPG/genLdpUgcMediaBrowserUrlComp/item_0.jpg",
     # Common
-    "common_feedback": f"{settings.CLOUDINARY_PATH.format('1')}{settings.CLOUDINARY_DIRECTORY['icons']}common_feedback.png",
-    "common_support": f"{settings.CLOUDINARY_PATH.format('1')}{settings.CLOUDINARY_DIRECTORY['icons']}common_support.png",
-    "common_about_us": f"{settings.CLOUDINARY_PATH.format('1')}{settings.CLOUDINARY_DIRECTORY['icons']}common_about_us.png",
-    "common_notification": f"{settings.CLOUDINARY_PATH.format('1')}{settings.CLOUDINARY_DIRECTORY['icons']}common_notification.png",
-    "common_login": f"{settings.CLOUDINARY_PATH.format('1')}{settings.CLOUDINARY_DIRECTORY['icons']}common_login.png",
-    "common_account_and_password": f"{settings.CLOUDINARY_PATH.format('1')}{settings.CLOUDINARY_DIRECTORY['icons']}common_account_and_password.png",
-    "common_faq": f"{settings.CLOUDINARY_PATH.format('1')}{settings.CLOUDINARY_DIRECTORY['icons']}common_faq.png",
-    "common_how_to_use": f"{settings.CLOUDINARY_PATH.format('1')}{settings.CLOUDINARY_DIRECTORY['icons']}common_how_to_use.png",
-    "common_chat_with_us": f"{settings.CLOUDINARY_PATH.format('1')}{settings.CLOUDINARY_DIRECTORY['icons']}common_chat_with_us.png",
-    "common_social": f"{settings.CLOUDINARY_PATH.format('1')}{settings.CLOUDINARY_DIRECTORY['icons']}common_social.png",
-    "common_social_facebook": f"{settings.CLOUDINARY_PATH.format('1')}{settings.CLOUDINARY_DIRECTORY['icons']}common_social_facebook.png",
-    "common_social_linkedin": f"{settings.CLOUDINARY_PATH.format('1')}{settings.CLOUDINARY_DIRECTORY['icons']}common_social_linkedin.png",
-    "common_social_youtube": f"{settings.CLOUDINARY_PATH.format('1')}{settings.CLOUDINARY_DIRECTORY['icons']}common_social_youtube.png",
-    "common_social_instagram": f"{settings.CLOUDINARY_PATH.format('1')}{settings.CLOUDINARY_DIRECTORY['icons']}common_social_instagram.png",
-    "common_privacy_policy": f"{settings.CLOUDINARY_PATH.format('1')}{settings.CLOUDINARY_DIRECTORY['icons']}common_privacy_policy.png"
+    "common_feedback": "https://ssl.cdn-redfin.com/system_files/media/793544_JPG/genLdpUgcMediaBrowserUrlComp/item_0.jpg",
+    "common_support": "https://ssl.cdn-redfin.com/system_files/media/793544_JPG/genLdpUgcMediaBrowserUrlComp/item_0.jpg",
+    "common_about_us": "https://ssl.cdn-redfin.com/system_files/media/793544_JPG/genLdpUgcMediaBrowserUrlComp/item_0.jpg",
+    "common_notification": "https://ssl.cdn-redfin.com/system_files/media/793544_JPG/genLdpUgcMediaBrowserUrlComp/item_0.jpg",
+    "common_login": "https://ssl.cdn-redfin.com/system_files/media/793544_JPG/genLdpUgcMediaBrowserUrlComp/item_0.jpg",
+    "common_account_and_password": "https://ssl.cdn-redfin.com/system_files/media/793544_JPG/genLdpUgcMediaBrowserUrlComp/item_0.jpg",
+    "common_faq": "https://ssl.cdn-redfin.com/system_files/media/793544_JPG/genLdpUgcMediaBrowserUrlComp/item_0.jpg",
+    "common_how_to_use": "https://ssl.cdn-redfin.com/system_files/media/793544_JPG/genLdpUgcMediaBrowserUrlComp/item_0.jpg",
+    "common_chat_with_us": "https://ssl.cdn-redfin.com/system_files/media/793544_JPG/genLdpUgcMediaBrowserUrlComp/item_0.jpg",
+    "common_social": "https://ssl.cdn-redfin.com/system_files/media/793544_JPG/genLdpUgcMediaBrowserUrlComp/item_0.jpg",
+    "common_social_facebook": "https://ssl.cdn-redfin.com/system_files/media/793544_JPG/genLdpUgcMediaBrowserUrlComp/item_0.jpg",
+    "common_social_linkedin": "https://ssl.cdn-redfin.com/system_files/media/793544_JPG/genLdpUgcMediaBrowserUrlComp/item_0.jpg",
+    "common_social_youtube": "https://ssl.cdn-redfin.com/system_files/media/793544_JPG/genLdpUgcMediaBrowserUrlComp/item_0.jpg",
+    "common_social_instagram": "https://ssl.cdn-redfin.com/system_files/media/793544_JPG/genLdpUgcMediaBrowserUrlComp/item_0.jpg",
+    "common_privacy_policy": "https://ssl.cdn-redfin.com/system_files/media/793544_JPG/genLdpUgcMediaBrowserUrlComp/item_0.jpg"
 }
+
+# ABOUT_US_IMAGE_URLS = {
+#     "JOB_SEEKER": {
+#         "FEEDBACK_GUIDE": f"{settings.CLOUDINARY_PATH.format('1')}{settings.CLOUDINARY_DIRECTORY['about_us']}job_seeker_feedback_guide.png",
+#         "ACHIEVEMENTS": f"{settings.CLOUDINARY_PATH.format('1')}{settings.CLOUDINARY_DIRECTORY['about_us']}job_seeker_achievements.png",
+#     },
+#     "EMPLOYER": {
+#         "FEEDBACK_GUIDE": f"{settings.CLOUDINARY_PATH.format('1')}{settings.CLOUDINARY_DIRECTORY['about_us']}job_seeker_feedback_guide.png",
+#         "ACHIEVEMENTS": f"{settings.CLOUDINARY_PATH.format('1')}{settings.CLOUDINARY_DIRECTORY['about_us']}employer_achievements.png",
+#     }
+# }
+
+# CHATBOT_ICONS = {
+#     # Job Seeker
+#     "job_seeker_search_job": f"{settings.CLOUDINARY_PATH.format('1')}{settings.CLOUDINARY_DIRECTORY['icons']}job_seeker_search_job.png",
+#     "job_seeker_search_company": f"{settings.CLOUDINARY_PATH.format('1')}{settings.CLOUDINARY_DIRECTORY['icons']}job_seeker_search_company.png",
+#     "job_seeker_manage_profile": f"{settings.CLOUDINARY_PATH.format('1')}{settings.CLOUDINARY_DIRECTORY['icons']}job_seeker_manage_profile.png",
+#     "job_seeker_track_application_status": f"{settings.CLOUDINARY_PATH.format('1')}{settings.CLOUDINARY_DIRECTORY['icons']}job_seeker_track_application_status.png",
+#     "job_seeker_manage_all_profile": f"{settings.CLOUDINARY_PATH.format('1')}{settings.CLOUDINARY_DIRECTORY['icons']}job_seeker_manage_all_profile.png",
+#     "job_seeker_myjob_profile": f"{settings.CLOUDINARY_PATH.format('1')}{settings.CLOUDINARY_DIRECTORY['icons']}job_seeker_myjob_profile.png",
+#     "job_seeker_attached_profile": f"{settings.CLOUDINARY_PATH.format('1')}{settings.CLOUDINARY_DIRECTORY['icons']}job_seeker_attached_profile.png",
+#     "job_seeker_about_us_target_1": f"{settings.CLOUDINARY_PATH.format('1')}{settings.CLOUDINARY_DIRECTORY['icons']}job_seeker_about_us_target_1.png",
+#     "job_seeker_about_us_target_2": f"{settings.CLOUDINARY_PATH.format('1')}{settings.CLOUDINARY_DIRECTORY['icons']}job_seeker_about_us_target_2.png",
+#     "job_seeker_about_us_target_3": f"{settings.CLOUDINARY_PATH.format('1')}{settings.CLOUDINARY_DIRECTORY['icons']}job_seeker_about_us_target_3.png",
+#     "job_seeker_about_us_target_4": f"{settings.CLOUDINARY_PATH.format('1')}{settings.CLOUDINARY_DIRECTORY['icons']}job_seeker_about_us_target_4.png",
+#     # Employer
+#     "employer_search_candidate": f"{settings.CLOUDINARY_PATH.format('1')}{settings.CLOUDINARY_DIRECTORY['icons']}employer_search_candidate.png",
+#     "employer_manage_candidate": f"{settings.CLOUDINARY_PATH.format('1')}{settings.CLOUDINARY_DIRECTORY['icons']}employer_manage_candidate.png",
+#     "employer_update_company_info": f"{settings.CLOUDINARY_PATH.format('1')}{settings.CLOUDINARY_DIRECTORY['icons']}employer_update_company_info.png",
+#     # Common
+#     "common_feedback": f"{settings.CLOUDINARY_PATH.format('1')}{settings.CLOUDINARY_DIRECTORY['icons']}common_feedback.png",
+#     "common_support": f"{settings.CLOUDINARY_PATH.format('1')}{settings.CLOUDINARY_DIRECTORY['icons']}common_support.png",
+#     "common_about_us": f"{settings.CLOUDINARY_PATH.format('1')}{settings.CLOUDINARY_DIRECTORY['icons']}common_about_us.png",
+#     "common_notification": f"{settings.CLOUDINARY_PATH.format('1')}{settings.CLOUDINARY_DIRECTORY['icons']}common_notification.png",
+#     "common_login": f"{settings.CLOUDINARY_PATH.format('1')}{settings.CLOUDINARY_DIRECTORY['icons']}common_login.png",
+#     "common_account_and_password": f"{settings.CLOUDINARY_PATH.format('1')}{settings.CLOUDINARY_DIRECTORY['icons']}common_account_and_password.png",
+#     "common_faq": f"{settings.CLOUDINARY_PATH.format('1')}{settings.CLOUDINARY_DIRECTORY['icons']}common_faq.png",
+#     "common_how_to_use": f"{settings.CLOUDINARY_PATH.format('1')}{settings.CLOUDINARY_DIRECTORY['icons']}common_how_to_use.png",
+#     "common_chat_with_us": f"{settings.CLOUDINARY_PATH.format('1')}{settings.CLOUDINARY_DIRECTORY['icons']}common_chat_with_us.png",
+#     "common_social": f"{settings.CLOUDINARY_PATH.format('1')}{settings.CLOUDINARY_DIRECTORY['icons']}common_social.png",
+#     "common_social_facebook": f"{settings.CLOUDINARY_PATH.format('1')}{settings.CLOUDINARY_DIRECTORY['icons']}common_social_facebook.png",
+#     "common_social_linkedin": f"{settings.CLOUDINARY_PATH.format('1')}{settings.CLOUDINARY_DIRECTORY['icons']}common_social_linkedin.png",
+#     "common_social_youtube": f"{settings.CLOUDINARY_PATH.format('1')}{settings.CLOUDINARY_DIRECTORY['icons']}common_social_youtube.png",
+#     "common_social_instagram": f"{settings.CLOUDINARY_PATH.format('1')}{settings.CLOUDINARY_DIRECTORY['icons']}common_social_instagram.png",
+#     "common_privacy_policy": f"{settings.CLOUDINARY_PATH.format('1')}{settings.CLOUDINARY_DIRECTORY['icons']}common_privacy_policy.png"
+# }
 
 SOCIAL_MEDIA_LINKS = {
     "facebook": "https://www.facebook.com",
