@@ -1,0 +1,55 @@
+# Ignore Python bytecode
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Ignore virtual environments
+env/
+venv/
+.myvenv/
+myvenv/
+
+# Ignore Django migration files
+**/migrations/
+**/migrations/*.pyc
+
+# Ignore settings/local config
+*.env
+*.env.*
+firebase_cred.json
+
+# Ignore IDE/editor folders
+.vscode/
+.idea/
+
+# Ignore test/output folders
+htmlcov/
+.coverage
+.tox/
+.pytest_cache/
+coverage.xml
+
+# Ignore media/uploads
+media/
+staticfiles/
+static/
+
+# Ignore ngrok or external tools
+ngrok/
+
+# Ignore node_modules (if using JS tools)
+node_modules/
+
+# Ignore Docker/Compose files (optional, nếu không muốn tracking)
+# docker-compose.yml
+# Dockerfile
+
+# Ignore system files
+.DS_Store
+Thumbs.db
+
+# Ignore Cursor-specific files
+.cursorignore
+
+# Postgres Data
+data/

@@ -1,0 +1,60 @@
+services:
+  db:
+    image: postgres:15
+    container_name: findjob-postgres
+    restart: always
+    environment:
+      - POSTGRES_DB=myjob_db
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=1
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./data/postgres_data:/var/lib/postgresql/data
+    networks:
+      - findjob_network
+  redis:
+    image: redis:alpine
+    container_name: findjob-redis
+    restart: unless-stopped
+    networks:
+      - findjob_network
+    ports:
+      - "6379:6379"
+  backend:
+    build: 
+      context: .
+      dockerfile: Dockerfile
+    container_name:  findjob-backend
+    restart: always
+    ports:
+      - "8000:8000"
+    volumes:
+      - .:/findjob_api
+    environment:
+      - DEBUG=True
+    command: python manage.py runserver 0.0.0.0:8000
+    depends_on:
+      - db
+    networks:
+      - findjob_network
+  celery-worker:
+    build: 
+      context: .
+      dockerfile: Dockerfile
+    container_name: findjob-celery-worker
+    restart: unless-stopped
+    command: celery -A findjob_api.celery worker --loglevel=info
+    volumes:
+      - .:/findjob_api
+    env_file:
+      - .env
+    networks:
+      - findjob_network
+    depends_on:
+      - redis
+      - backend
+
+networks:
+  findjob_network:
+    name: findjob_network
